@@ -1,6 +1,7 @@
 package tx
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -85,6 +86,11 @@ func SendTx(clientCtx client.Context, flagSet *pflag.FlagSet, key cryptotypes.Pr
 	res, err := clientCtx.BroadcastTx(txBytes)
 	if err != nil {
 		return nil, err
+	}
+
+	// check if TX resulted in an error
+	if err == nil && res.Code != 0 {
+		err = errors.New(res.RawLog)
 	}
 
 	return res, err
